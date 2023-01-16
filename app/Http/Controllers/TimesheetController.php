@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Line;
 use App\Models\Timesheet;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTimesheetRequest;
 use App\Http\Requests\UpdateTimesheetRequest;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 
@@ -14,13 +16,12 @@ class TimesheetController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index()
+    public function index(StoreTimesheetRequest $request)
     {
-        //
-        $timesheet = Timesheet::query()->get();
-//        dd($timesheet);
+        $timesheet = Timesheet::has('tasks')->get();
+//        dd($timesheet[4]->tasks);
 //        foreach ($timesheet as $sheet) {
 //            dd($sheet->schedule);
 //        }
@@ -46,13 +47,20 @@ class TimesheetController extends Controller
     public function store(StoreTimesheetRequest $request)
     {
         $request->validated();
-        dd($request);
         $timesheet = Timesheet::create(array(
             'difficult' => $request->difficult,
             'schedule' => $request->schedule,
             'user_id' => Auth::user()->id,
+            'date' => Carbon::now(),
         ));
-        dd($timesheet);
+        $tasks = [];
+        foreach ($request->task as $index => $task) {
+            $tasks[$index] = Line::create([
+               'task_id' =>  $index,
+                'content' => $task,
+                'timesheet_id' => $timesheet->id
+            ]);
+        }
         return Redirect::route('timesheet');
 
     }

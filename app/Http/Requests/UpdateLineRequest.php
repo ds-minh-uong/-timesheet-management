@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTimesheetRequest extends FormRequest
+class UpdateLineRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class StoreTimesheetRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -24,9 +24,7 @@ class StoreTimesheetRequest extends FormRequest
     public function rules()
     {
         return [
-            'difficult' => ['string'],
-            'schedule' => ['string'],
-            'date' => ['date']
+            //
         ];
     }
 }

@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use App\Models\Timesheet;
+use App\Models\Line;
 use App\Models\User;
 
-class TimesheetPolicy
+class LinePolicy
 {
     use HandlesAuthorization;
 
@@ -25,10 +25,10 @@ class TimesheetPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Timesheet  $timesheet
+     * @param  \App\Models\Line  $line
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Timesheet $timesheet)
+    public function view(User $user, Line $line)
     {
         //
     }
@@ -42,17 +42,16 @@ class TimesheetPolicy
     public function create(User $user)
     {
         //
-        return true;
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Timesheet  $timesheet
+     * @param  \App\Models\Line  $line
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Timesheet $timesheet)
+    public function update(User $user, Line $line)
     {
         //
     }
@@ -61,10 +60,10 @@ class TimesheetPolicy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Timesheet  $timesheet
+     * @param  \App\Models\Line  $line
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Timesheet $timesheet)
+    public function delete(User $user, Line $line)
     {
         //
     }
@@ -73,10 +72,10 @@ class TimesheetPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Timesheet  $timesheet
+     * @param  \App\Models\Line  $line
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Timesheet $timesheet)
+    public function restore(User $user, Line $line)
     {
         //
     }
@@ -85,10 +84,10 @@ class TimesheetPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Timesheet  $timesheet
+     * @param  \App\Models\Line  $line
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Timesheet $timesheet)
+    public function forceDelete(User $user, Line $line)
     {
         //
     }

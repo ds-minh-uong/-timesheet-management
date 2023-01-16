@@ -15,4 +15,9 @@ class Timesheet extends Model
         'user_id',
         'schedule'
     ];
+
+    public function tasks()
+    {
+        return $this->hasMany(Line::class);
+    }
 }
