@@ -28,9 +28,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/timesheet', [TimesheetController::class, 'index'])->name('timesheet');
-    Route::patch('/timesheet', [TimesheetController::class, 'update'])->name('timesheet.update');
-    Route::post('/timesheet', [TimesheetController::class, 'store'])->name('timesheet.store');
+    Route::prefix('/timesheet')->group(function () {
+        Route::get('/', [TimesheetController::class, 'index'])->name('timesheet');
+        Route::get('/{timesheet}', [TimesheetController::class, 'show'])->name('timesheet.show');
+        Route::patch('/{timesheet}', [TimesheetController::class, 'update'])->name('timesheet.update');
+        Route::post('/', [TimesheetController::class, 'store'])->name('timesheet.store');
+        Route::delete('/{timesheet}', [TimesheetController::class, 'destroy'])->name('timesheet.destroy');
+    });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

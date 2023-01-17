@@ -13,7 +13,7 @@ class UpdateTimesheetRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,9 @@ class UpdateTimesheetRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'difficult' => ['string'],
+            'schedule' => ['string'],
+            'date' => ['date']
         ];
     }
 }
