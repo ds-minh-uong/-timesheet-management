@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTimesheetRequest;
 use App\Http\Requests\UpdateTimesheetRequest;
 use Carbon\Carbon;
+use http\Env\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Termwind\Components\Li;
@@ -44,6 +45,11 @@ class TimesheetController extends Controller
     public function store(StoreTimesheetRequest $request)
     {
         $req = $request->validated();
+        $check = Timesheet::where('date', Carbon::now()->toDateString())->get();
+        if (!empty($check[0])) {
+            return Redirect::back()->withErrors('cannot create timesheet');
+
+        }
         $timesheet = Timesheet::create([
             'difficult' => $req['difficult'],
             'schedule' => $req['schedule'],
