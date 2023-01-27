@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [TimesheetController::class, 'index'])->name('timesheet');
         Route::get('/{timesheet}', [TimesheetController::class, 'show'])->name('timesheet.show');
         Route::patch('/{timesheet}', [TimesheetController::class, 'update'])->name('timesheet.update');
+        Route::patch('/{timesheet}/approve', [TimesheetController::class, 'updateStatus'])->name('timesheet.approve');
         Route::post('/', [TimesheetController::class, 'store'])->name('timesheet.store');
         Route::delete('/{timesheet}', [TimesheetController::class, 'destroy'])->name('timesheet.destroy');
     });
