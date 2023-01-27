@@ -26,7 +26,8 @@ class UpdateTimesheetRequest extends FormRequest
         return [
             'difficult' => ['string'],
             'schedule' => ['string'],
-            'date' => ['date']
+            'date' => ['date'],
+            'status' => ['string']
         ];
     }
 }

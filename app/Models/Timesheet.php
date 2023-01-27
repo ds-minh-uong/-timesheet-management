@@ -13,7 +13,8 @@ class Timesheet extends Model
         'date',
         'difficult',
         'user_id',
-        'schedule'
+        'schedule',
+        'manager_id'
     ];
 
     public function tasks()
