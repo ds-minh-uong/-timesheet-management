@@ -21,7 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'description'
+        'description',
+        'role'
     ];
 
     /**
@@ -42,4 +43,16 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function timesheet() {
+        return $this->hasMany(Timesheet::class);
+    }
+    public static function boot() {
+        parent::boot();
+
+        static::deleting(function($user) { // before delete() method call this
+            $user->timesheet()->delete();
+
+        });
+    }
 }

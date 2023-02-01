@@ -30,7 +30,7 @@ class TimesheetPolicy
      */
     public function view(User $user, Timesheet $timesheet)
     {
-        //
+        return $user->role === 1 || ($user->role === 2 && $user->id === $timesheet->manager_id) || $user->id === $timesheet->user_id;
     }
 
     /**

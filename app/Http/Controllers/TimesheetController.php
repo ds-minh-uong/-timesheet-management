@@ -23,6 +23,8 @@ class TimesheetController extends Controller
     public function index()
     {
         $user = Auth::user();
+//        $this->authorize('viewAny');
+
         if ($user->role == 0) {
             $timesheet = Timesheet::has('tasks')->where('user_id', $user->id)->get();
         } elseif ($user->role == 1) {
@@ -62,6 +64,7 @@ class TimesheetController extends Controller
             'schedule' => $req['schedule'],
             'user_id' => Auth::user()->id,
             'date' => Carbon::now(),
+            'manager_id' => Auth::user()->manager_id ?? 0
         ]);
         $tasks = [];
         foreach ($request->task as $index => $task) {
@@ -69,7 +72,6 @@ class TimesheetController extends Controller
                 'task_id' => $index,
                 'content' => $task,
                 'timesheet_id' => $timesheet->id,
-                'manager_id' => Auth::user()->manager_id ?? 0
             ]);
         }
         return Redirect::route('timesheet');
@@ -86,6 +88,7 @@ class TimesheetController extends Controller
     {
 
         return view('timesheet-detail', ['timesheet' => $timesheet]);
+
     }
 
     /**
@@ -152,10 +155,6 @@ class TimesheetController extends Controller
      */
     public function destroy(Timesheet $timesheet)
     {
-        $tasks = Line::where('timesheet_id', $timesheet->id)->get();
-        foreach ($tasks as $task) {
-            $task->delete();
-        }
         $timesheet->delete();
         return Redirect::route('timesheet');
     }

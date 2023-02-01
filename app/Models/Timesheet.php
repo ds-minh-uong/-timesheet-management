@@ -21,4 +21,13 @@ class Timesheet extends Model
     {
         return $this->hasMany(Line::class);
     }
+
+    public static function boot() {
+        parent::boot();
+
+        static::deleting(function($timesheet) { // before delete() method call this
+            $timesheet->tasks()->delete();
+            // do the rest of the cleanup...
+        });
+    }
 }

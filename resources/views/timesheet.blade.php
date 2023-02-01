@@ -27,6 +27,13 @@
                             x-data=""
                             x-on:click.prevent="$dispatch('open-modal', 'confirm-timesheet-deletion-{{$timesheet_detail->id}}')"
                         >{{ __('Delete') }}</x-danger-button>
+                        @if(Auth::user() && Auth::user()->role === 1)
+                            @if($timesheet_detail->status == 'pending')
+                                <button>approve</button>
+                            @elseif($timesheet_detail->status == 'approved')
+                                approved
+                            @endif
+                        @endif
                     </div>
                 </div>
                 <x-modal name="edit-timesheet-{{$timesheet_detail->id}}" :show="false" focusable>
