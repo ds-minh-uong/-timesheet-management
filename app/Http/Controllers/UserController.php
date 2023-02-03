@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class UserController extends Controller
 {
@@ -23,12 +24,12 @@ class UserController extends Controller
         User::find($user->id)->update([
             'role' => $req['role'],
         ]);
-        return view('manage');
+        return Redirect::route('manage.user');
     }
     public function destroy(User $user)
     {
         $this->authorize('delete', Auth::user());
         $user->delete();
-        return Redirect::route('manager');
+        return Redirect::route('manage.user');
     }
 }

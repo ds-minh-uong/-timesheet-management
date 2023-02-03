@@ -4,34 +4,25 @@
             <div>{{$user->name}}</div>
             <div class="ml-3">{{$user->email}}</div>
             <div>
-                <x-secondary-button
-                    x-data=""
-                    x-on:click.prevent="$dispatch('open-modal', 'edit')"
-                >{{ __('Edit') }}</x-secondary-button>
-                <x-danger-button
-                    x-data=""
-                    x-on:click.prevent="$dispatch('open-modal', 'confirm-deletion-{{$user->id}}')"
-                >{{ __('Delete') }}</x-danger-button>
+                <form method="post" action="/manage/user/{{$user->id}}">
+                    @csrf
+                    @method('patch')
+                    <select name="role" id="role" value={{$user->role}}>
+                        <option {{$user->role === 1 ? "selected" : ""}} value="1">Admin</option>
+                        <option {{$user->role === 2 ? "selected" : ""}} value="2">Manager</option>
+                        <option {{$user->role === 0 ? "selected" : ""}} value="0">Employee</option>
+                    </select>
+{{--                    <input type="submit" value="Change">--}}
+                    <x-secondary-button type="submit">
+                        {{ __('Change') }}
+                    </x-secondary-button>
+                </form>
+{{--                <x-danger-button--}}
+{{--                    x-data=""--}}
+{{--                    x-on:click.prevent="$dispatch('open-modal', 'confirm-deletion-{{$user->id}}')"--}}
+{{--                >{{ __('Delete') }}</x-danger-button>--}}
             </div>
         </div>
-        <x-modal name="confirm-deletion-{{$user->id}}" :show="false" focusable>
-            <form method="post" action="/manage/{{$user->id}}" class="p-6">
-                @csrf
-                @method('delete')
-                <div>
-                    Delete this timesheet?
-                </div>
-                <div class="mt-6 flex justify-end">
-                    <x-secondary-button x-on:click="$dispatch('close')">
-                        {{ __('Cancel') }}
-                    </x-secondary-button>
-
-                    <x-danger-button class="ml-3">
-                        {{ __('Delete') }}
-                    </x-danger-button>
-                </div>
-            </form>
-        </x-modal>
 
     @endforeach
 </x-app-layout>

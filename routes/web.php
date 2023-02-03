@@ -37,8 +37,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [TimesheetController::class, 'store'])->name('timesheet.store');
         Route::delete('/{timesheet}', [TimesheetController::class, 'destroy'])->name('timesheet.destroy');
     });
-    Route::prefix('/manage')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('manage');
+    Route::prefix('/manage/user')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('manage.user');
+        Route::patch('/{user}', [UserController::class, 'update'])->name('manage.updateRole');
         Route::delete('/{user}', [UserController::class, 'destroy']);
     });
 });

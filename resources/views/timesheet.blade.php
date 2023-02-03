@@ -29,9 +29,14 @@
                         >{{ __('Delete') }}</x-danger-button>
                         @if(Auth::user() && Auth::user()->role === 1)
                             @if($timesheet_detail->status == 'pending')
-                                <button>approve</button>
+                                <form method="post" action="/timesheet/{{$timesheet_detail->id}}/approve">
+                                    @csrf
+                                    @method('patch')
+                                        <x-text-input id="status" type="hidden" name="status" value="approved"/>
+                                    <input type="submit" value="approve">
+                                </form>
                             @elseif($timesheet_detail->status == 'approved')
-                                approved
+                                v
                             @endif
                         @endif
                     </div>
@@ -82,7 +87,6 @@
                     </form>
                 </x-modal>
                 <x-modal name="confirm-timesheet-deletion-{{$timesheet_detail->id}}" :show="false" focusable>
-                    hi
                     <form method="post" action="/timesheet/{{$timesheet_detail->id}}" class="p-6">
                         @csrf
                         @method('delete')
