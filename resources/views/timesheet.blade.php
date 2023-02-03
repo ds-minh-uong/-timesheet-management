@@ -5,6 +5,7 @@
         </h2>
     </x-slot>
 
+    <div id='calendar'></div>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @foreach($timesheet as $timesheet_detail)
@@ -74,6 +75,7 @@
                     </form>
                 </x-modal>
                 <x-modal name="confirm-timesheet-deletion-{{$timesheet_detail->id}}" :show="false" focusable>
+                    hi
                     <form method="post" action="/timesheet/{{$timesheet_detail->id}}" class="p-6">
                         @csrf
                         @method('delete')
@@ -117,3 +119,28 @@
     $(document).on('click', '#removeRow', function () {
         $(this).closest('#inputFormRow').remove();
     });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridWeek',
+            events: [
+                @foreach($timesheet as $t)
+                {
+                    title: '{{$t->schedule}}',
+                    start: '{{$t->date}}',
+                    groupId: '{{$t->id}}',
+                    url: '/timesheet/{{$t->id}}'
+                },
+                @endforeach
+                ],
+            eventClick: function (event) {
+                console.log(event.event._def)
+                $("#timesheetDetail").modal('show')
+            },
+        });
+        calendar.render();
+    });
+
+</script>
