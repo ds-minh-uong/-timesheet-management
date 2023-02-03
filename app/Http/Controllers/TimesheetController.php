@@ -23,8 +23,6 @@ class TimesheetController extends Controller
     public function index()
     {
         $user = Auth::user();
-//        $this->authorize('viewAny');
-
         if ($user->role == 0) {
             $timesheet = Timesheet::has('tasks')->where('user_id', $user->id)->get();
         } elseif ($user->role == 1) {
@@ -82,7 +80,7 @@ class TimesheetController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Timesheet  $timesheet
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return \Illuminate\Http\Response
      */
     public function show(Timesheet $timesheet)
     {
