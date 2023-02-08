@@ -14,12 +14,18 @@ class Timesheet extends Model
         'difficult',
         'user_id',
         'schedule',
-        'manager_id'
+        'manager_id',
+        'status'
     ];
 
     public function tasks()
     {
         return $this->hasMany(Line::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public static function boot() {

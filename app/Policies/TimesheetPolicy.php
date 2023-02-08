@@ -30,7 +30,24 @@ class TimesheetPolicy
      */
     public function view(User $user, Timesheet $timesheet)
     {
-        return $user->role === 1 || ($user->role === 2 && $user->id === $timesheet->manager_id) || $user->id === $timesheet->user_id;
+        switch ($user->role) {
+            case 1:
+                return true;
+            case 2:
+                if ($user->id === $timesheet->user_id)
+                    return true;
+                elseif ($user->id === $timesheet->manager_id)
+                    return true;
+                else
+                    return false;
+            case 0:
+                if ($user->id === $timesheet->user_id)
+                    return true;
+                else
+                    return 0;
+            default:
+                return false;
+        }
     }
 
     /**

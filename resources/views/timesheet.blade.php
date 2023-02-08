@@ -12,6 +12,9 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-1 d-flex justify-content-between">
                     <div class="p-6 text-gray-900">
                         <div>{{$timesheet_detail->date}}</div>
+                        @if(isset($timesheet_detail->creator))
+                            <div>Người tạo: {{$timesheet_detail->creator->name}}</div>
+                        @endif
                         @foreach($timesheet_detail->tasks as $task)
                             <div>- {{$task->content}}</div>
                         @endforeach
@@ -27,16 +30,16 @@
                             x-data=""
                             x-on:click.prevent="$dispatch('open-modal', 'confirm-timesheet-deletion-{{$timesheet_detail->id}}')"
                         >{{ __('Delete') }}</x-danger-button>
-                        @if(Auth::user() && Auth::user()->role === 1)
+                        @if(Auth::user()->role === 1 || (Auth::user()->role === 2 && Auth::user()->id === $timesheet_detail->manager_id))
                             @if($timesheet_detail->status == 'pending')
                                 <form method="post" action="/timesheet/{{$timesheet_detail->id}}/approve">
                                     @csrf
                                     @method('patch')
-                                        <x-text-input id="status" type="hidden" name="status" value="approved"/>
-                                    <input type="submit" value="approve">
+                                    <x-text-input id="status" type="hidden" name="status" value="approved"/>
+                                    <input class="border border-gray-100 p-1 rounded bg-primary text-white" type="submit" value="approve">
                                 </form>
                             @elseif($timesheet_detail->status == 'approved')
-                                v
+                                <button class="border border-gray-100 p-1 rounded bg-gray-500 text-white" disabled>approved</button>
                             @endif
                         @endif
                     </div>
@@ -47,17 +50,20 @@
                         @method('patch')
 
                         <div class="row">
-                            <x-input-label for="task[]" :value="__('Task')" />
+                            <x-input-label for="task[]" :value="__('Task')"/>
                             <div class="col-lg-12">
                                 @foreach($timesheet_detail->tasks as $task)
-                                <div id="inputFormRow">
-                                    <div class="input-group mb-3">
-                                        <input type="text" name="task[]" class="form-control m-input" value="{{$task->content}}" placeholder="Enter title" autocomplete="off">
-                                        <div class="input-group-append">
-                                            <button id="removeRow" type="button" class="btn btn-danger">Remove</button>
+                                    <div id="inputFormRow">
+                                        <div class="input-group mb-3">
+                                            <input type="text" name="task[]" class="form-control m-input"
+                                                   value="{{$task->content}}" placeholder="Enter title"
+                                                   autocomplete="off">
+                                            <div class="input-group-append">
+                                                <button id="removeRow" type="button" class="btn btn-danger">Remove
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                                 @endforeach
 
                                 <div id="newRow"></div>
@@ -65,14 +71,16 @@
                             </div>
                         </div>
                         <div>
-                            <x-input-label for="difficult" :value="__('Khó khăn')" />
-                            <x-text-input id="difficult" class="block mt-1 w-full" type="text" name="difficult" :value="$timesheet_detail->difficult" required autofocus />
-                            <x-input-error :messages="$errors->get('difficult')" class="mt-2" />
+                            <x-input-label for="difficult" :value="__('Khó khăn')"/>
+                            <x-text-input id="difficult" class="block mt-1 w-full" type="text" name="difficult"
+                                          :value="$timesheet_detail->difficult" required autofocus/>
+                            <x-input-error :messages="$errors->get('difficult')" class="mt-2"/>
                         </div>
                         <div>
-                            <x-input-label for="schedule" :value="__('Dự định sẽ làm trong ngày tiếp theo')" />
-                            <x-text-input id="schedule" class="block mt-1 w-full" type="text" name="schedule" :value="$timesheet_detail->schedule" required autofocus />
-                            <x-input-error :messages="$errors->get('schedule')" class="mt-2" />
+                            <x-input-label for="schedule" :value="__('Dự định sẽ làm trong ngày tiếp theo')"/>
+                            <x-text-input id="schedule" class="block mt-1 w-full" type="text" name="schedule"
+                                          :value="$timesheet_detail->schedule" required autofocus/>
+                            <x-input-error :messages="$errors->get('schedule')" class="mt-2"/>
                         </div>
 
                         <div class="mt-6 flex justify-end">
@@ -132,12 +140,12 @@
     });
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridWeek',
+            initialView: 'dayGridMonth',
             events: [
-                @foreach($timesheet as $t)
+                    @foreach($timesheet as $t)
                 {
                     title: '{{$t->schedule}}',
                     start: '{{$t->date}}',
@@ -145,7 +153,7 @@
                     url: '/timesheet/{{$t->id}}'
                 },
                 @endforeach
-                ],
+            ],
             eventClick: function (event) {
                 console.log(event.event._def)
                 $("#timesheetDetail").modal('show')

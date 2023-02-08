@@ -24,11 +24,11 @@ class TimesheetController extends Controller
     {
         $user = Auth::user();
         if ($user->role == 0) {
-            $timesheet = Timesheet::has('tasks')->where('user_id', $user->id)->get();
+            $timesheet = Timesheet::has('tasks')->has('creator')->where('user_id', $user->id)->get();
         } elseif ($user->role == 1) {
             $timesheet = Timesheet::has('tasks')->get();
         } elseif ($user->role == 2) {
-            $timesheet = Timesheet::has('tasks')->where('manager_id', $user->id)->get();
+            $timesheet = Timesheet::has('tasks')->has('creator')->where('manager_id', $user->id)->orWhere('user_id', $user->id)->get();
         }
         return view('timesheet', ['timesheet' => $timesheet]);
     }
