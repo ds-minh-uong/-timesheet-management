@@ -47,6 +47,10 @@ class User extends Authenticatable
     public function timesheet() {
         return $this->hasMany(Timesheet::class);
     }
+
+    public function manager() {
+        return $this->belongsTo(User::class);
+    }
     public static function boot() {
         parent::boot();
 

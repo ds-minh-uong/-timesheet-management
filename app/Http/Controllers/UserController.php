@@ -13,7 +13,7 @@ class UserController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Auth::user());
-        $users = User::all();
+        $users = User::with('manager')->get();
 
         return view('manage-user', ['users' => $users]);
     }
