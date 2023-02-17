@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Timesheets;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreLineRequest extends FormRequest
+class StoreTimesheetRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class StoreLineRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,9 @@ class StoreLineRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'difficult' => ['string'],
+            'schedule' => ['string'],
+            'date' => ['date']
         ];
     }
 }

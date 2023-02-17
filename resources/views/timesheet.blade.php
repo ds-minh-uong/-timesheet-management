@@ -30,7 +30,7 @@
                             x-data=""
                             x-on:click.prevent="$dispatch('open-modal', 'confirm-timesheet-deletion-{{$timesheet_detail->id}}')"
                         >{{ __('Delete') }}</x-danger-button>
-                        @if(Auth::user()->role === 1 || (Auth::user()->role === 2 && Auth::user()->id === $timesheet_detail->manager_id))
+                        @if(Auth::user()->can('updateStatus', $timesheet_detail))
                             @if($timesheet_detail->status == 'pending')
                                 <form method="post" action="/timesheet/{{$timesheet_detail->id}}/approve">
                                     @csrf

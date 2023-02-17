@@ -16,10 +16,10 @@ class TimesheetPolicy
      * @param \App\Models\User $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
-    {
-        //
-    }
+//    public function viewAny(User $user)
+//    {
+//        //
+//    }
 
     /**
      * Determine whether the user can view the model.
@@ -31,20 +31,20 @@ class TimesheetPolicy
     public function view(User $user, Timesheet $timesheet)
     {
         switch ($user->role) {
-            case 1:
+            case User::ROLE_ADMIN:
                 return true;
-            case 2:
+            case User::ROLE_MANAGER:
                 if ($user->id === $timesheet->user_id)
                     return true;
                 elseif ($user->id === $timesheet->manager_id)
                     return true;
                 else
                     return false;
-            case 0:
+            case User::ROLE_USER:
                 if ($user->id === $timesheet->user_id)
                     return true;
                 else
-                    return 0;
+                    return false;
             default:
                 return false;
         }
@@ -78,7 +78,7 @@ class TimesheetPolicy
     //role: 1 - admin, 2 - manager
     public function updateStatus(User $user, Timesheet $timesheet)
     {
-        return $user->role === 1 || ($user->role === 2 && $user->id === $timesheet->manager_id);
+        return $user->role === User::ROLE_ADMIN || ($user->role === User::ROLE_MANAGER && $user->id === $timesheet->manager_id);
     }
 
     /**

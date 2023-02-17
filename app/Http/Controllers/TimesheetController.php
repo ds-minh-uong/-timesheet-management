@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Line;
+use App\Http\Requests\Timesheets\StoreTimesheetRequest;
+use App\Http\Requests\Timesheets\UpdateTimesheetRequest;
+use App\Models\Task;
 use App\Models\Timesheet;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreTimesheetRequest;
-use App\Http\Requests\UpdateTimesheetRequest;
 use Carbon\Carbon;
-use http\Env\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Termwind\Components\Li;
 
 class TimesheetController extends Controller
 {
@@ -46,7 +43,7 @@ class TimesheetController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\StoreTimesheetRequest $request
+     * @param \App\Http\Requests\Timesheets\StoreTimesheetRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreTimesheetRequest $request)
@@ -55,21 +52,19 @@ class TimesheetController extends Controller
         $check = Timesheet::where('date', Carbon::now()->toDateString())->where('user_id', Auth::user()->id)->get();
         if (!empty($check[0])) {
             return Redirect::back()->withErrors('cannot create timesheet');
-
         }
-        $timesheet = Timesheet::create([
+
+        $user = Auth::user();
+        $timesheet = $user->timesheets()->create([
             'difficult' => $req['difficult'],
             'schedule' => $req['schedule'],
-            'user_id' => Auth::user()->id,
             'date' => Carbon::now(),
-            'manager_id' => Auth::user()->manager_id ?? 0
+            'manager_id' => $user->manager_id ?? 0
         ]);
-        $tasks = [];
         foreach ($request->task as $index => $task) {
-            $tasks[$index] = Line::create([
+            $timesheet->tasks()->create([
                 'task_id' => $index,
-                'content' => $task,
-                'timesheet_id' => $timesheet->id,
+                'content' => $task
             ]);
         }
         return Redirect::route('timesheet');
@@ -103,7 +98,7 @@ class TimesheetController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \App\Http\Requests\UpdateTimesheetRequest $request
+     * @param \App\Http\Requests\Timesheets\UpdateTimesheetRequest $request
      * @param \App\Models\Timesheet $timesheet
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -112,7 +107,7 @@ class TimesheetController extends Controller
         $this->authorize('update', $timesheet);
 
         $req = $request->validated();
-        $tasks = Line::where('timesheet_id', $timesheet->id)->get();
+        $tasks = Task::where('timesheet_id', $timesheet->id)->get();
         foreach ($tasks as $task) {
             $task->delete();
         }
@@ -123,7 +118,7 @@ class TimesheetController extends Controller
         ]);
 
         foreach ($request->task as $index => $task) {
-            $tasks[$index] = Line::create([
+            $tasks[$index] = Task::create([
                 'task_id' => $index,
                 'content' => $task,
                 'timesheet_id' => $timesheet->id

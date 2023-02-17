@@ -20,7 +20,7 @@ class Timesheet extends Model
 
     public function tasks()
     {
-        return $this->hasMany(Line::class);
+        return $this->hasMany(Task::class);
     }
 
     public function creator()

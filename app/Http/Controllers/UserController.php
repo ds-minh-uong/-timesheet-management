@@ -12,7 +12,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $this->authorize('viewAny', Auth::user());
+        $this->authorize('manageUser', Auth::user());
         $users = User::with('manager')->get();
 
         return view('manage-user', ['users' => $users]);
@@ -21,9 +21,10 @@ class UserController extends Controller
     //update user's role
     public function update(User $user, ProfileUpdateRequest $request) {
         $req = $request->validated();
-        User::find($user->id)->update([
-            'role' => $req['role'],
-        ]);
+        $this->authorize('updateRole', Auth::user());
+
+        $user->role = $req['role'];
+        $user->save();
         return Redirect::route('manage.user');
     }
     public function destroy(User $user)
