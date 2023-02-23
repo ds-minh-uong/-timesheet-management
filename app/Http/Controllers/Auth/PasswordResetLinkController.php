@@ -47,9 +47,8 @@ class PasswordResetLinkController extends Controller
             'token' => $token
         ]);
 
-//        $resetUrl = url( '/reset-password'. '?token=' . $token);
-        $resetUrl = URL::temporarySignedRoute('password.reset', now()->addMinutes(3), ['user' => 1]);
-        Mail::to($request->only('email'))->send(new ResetPassword($resetUrl . '?token=' . $token));
+        $resetUrl = URL::temporarySignedRoute('password.reset', now()->addMinutes(3), ['token' => $token, 'email' => $request->email]);
+        Mail::to($request->only('email'))->send(new ResetPassword($resetUrl));
 
         return back()->with('message', 'We have e-mailed your password reset link!');
     }
