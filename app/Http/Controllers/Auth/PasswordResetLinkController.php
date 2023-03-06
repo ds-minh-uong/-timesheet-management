@@ -29,27 +29,16 @@ class PasswordResetLinkController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
+        $request->validate(['email' => 'required|email']);
 
-        if (!User::where('email', $request->email)->first()) {
-            return back()->withErrors([
-                'email' => 'This email has not been registered',
-            ]);
-        }
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
 
-        $token = Str::random(32);
-        PasswordReset::insert([
-            'email' => $request->email,
-            'token' => $token
-        ]);
-
-        $resetUrl = URL::temporarySignedRoute('password.reset', now()->addMinutes(3), ['token' => $token, 'email' => $request->email]);
-        Mail::to($request->only('email'))->send(new ResetPassword($resetUrl));
-
-        return back()->with('message', 'We have e-mailed your password reset link!');
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with(['status' => __($status)])
+            : back()->withErrors(['email' => __($status)]);
     }
 }
