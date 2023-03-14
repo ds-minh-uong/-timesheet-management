@@ -19,7 +19,7 @@
                     <form method="post" action="/manage/user/{{$user->id}}">
                         @csrf
                         @method('patch')
-                        <select name="role" id="role" value={{$user->role}}>
+                        <select name="role" id="role">
                             <option {{$user->role === 1 ? "selected" : ""}} value="1">Admin</option>
                             <option {{$user->role === 2 ? "selected" : ""}} value="2">Manager</option>
                             <option {{$user->role === 0 ? "selected" : ""}} value="0">Employee</option>

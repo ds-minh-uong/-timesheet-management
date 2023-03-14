@@ -6,28 +6,29 @@ use App\Http\Requests\Timesheets\StoreTimesheetRequest;
 use App\Http\Requests\Timesheets\UpdateTimesheetRequest;
 use App\Models\Task;
 use App\Models\Timesheet;
+use App\Services\TimesheetService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 
-class TimesheetController extends Controller
+class TimesheetController extends BaseController
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
+
+    public function __construct(TimesheetService $timesheetService)
+    {
+        parent::__construct();
+        $this->timesheetService = $timesheetService;
+    }
+
     public function index()
     {
-        $user = Auth::user();
-        if ($user->role == 0) {
-            $timesheet = Timesheet::has('tasks')->has('creator')->where('user_id', $user->id)->get();
-        } elseif ($user->role == 1) {
-            $timesheet = Timesheet::has('tasks')->get();
-        } elseif ($user->role == 2) {
-            $timesheet = Timesheet::has('tasks')->has('creator')->where('manager_id', $user->id)->orWhere('user_id', $user->id)->get();
-        }
-        return view('timesheet', ['timesheet' => $timesheet]);
+        $timesheets = $this->timesheetService->list();
+        return view('timesheet', ['timesheet' => $timesheets]);
     }
 
     /**
@@ -49,24 +50,8 @@ class TimesheetController extends Controller
     public function store(StoreTimesheetRequest $request)
     {
         $req = $request->validated();
-        $check = Timesheet::where('date', Carbon::now()->toDateString())->where('user_id', Auth::user()->id)->get();
-        if (!empty($check[0])) {
-            return Redirect::back()->withErrors('cannot create timesheet');
-        }
-
-        $user = Auth::user();
-        $timesheet = $user->timesheets()->create([
-            'difficult' => $req['difficult'],
-            'schedule' => $req['schedule'],
-            'date' => Carbon::now(),
-            'manager_id' => $user->manager_id ?? 0
-        ]);
-        foreach ($request->task as $index => $task) {
-            $timesheet->tasks()->create([
-                'task_id' => $index,
-                'content' => $task
-            ]);
-        }
+        $req['task'] = $request->task;
+        $timesheet = $this->timesheetService->create($req);
         return Redirect::route('timesheet');
 
     }
@@ -105,25 +90,9 @@ class TimesheetController extends Controller
     public function update(Timesheet $timesheet, UpdateTimesheetRequest $request)
     {
         $this->authorize('update', $timesheet);
-
         $req = $request->validated();
-        $tasks = Task::where('timesheet_id', $timesheet->id)->get();
-        foreach ($tasks as $task) {
-            $task->delete();
-        }
-
-        Timesheet::find($timesheet->id)->update([
-            'difficult' => $req['difficult'],
-            'schedule' => $req['schedule'],
-        ]);
-
-        foreach ($request->task as $index => $task) {
-            $tasks[$index] = Task::create([
-                'task_id' => $index,
-                'content' => $task,
-                'timesheet_id' => $timesheet->id
-            ]);
-        }
+        $req['task'] = $request->task;
+        $timesheet = $this->timesheetService->update($timesheet, $req);
         return Redirect::route('timesheet');
 
     }
