@@ -3,12 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements CanResetPassword
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -21,8 +22,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'description'
+        'description',
     ];
+
+    protected $guarded = ['role'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -42,4 +45,24 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public const ROLE_ADMIN = 1;
+    public const ROLE_MANAGER = 2;
+    public const ROLE_USER = 0;
+
+    public function timesheets() {
+        return $this->hasMany(Timesheet::class);
+    }
+
+    public function manager() {
+        return $this->belongsTo(User::class);
+    }
+    public static function boot() {
+        parent::boot();
+
+        static::deleting(function($user) { // before delete() method call this
+            $user->timesheet()->delete();
+
+        });
+    }
 }
