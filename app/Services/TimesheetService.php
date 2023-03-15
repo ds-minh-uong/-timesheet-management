@@ -8,13 +8,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 
-class TimesheetService extends BaseService
+class TimesheetService implements TimesheetServiceInterface
 {
-    public function __construct()
-    {
-        parent::__construct();
-        $this->user = Auth::user();
-    }
 
     public function list()
     {
@@ -54,11 +49,6 @@ class TimesheetService extends BaseService
 
     public function update($timesheet, $params)
     {
-//        $tasks = Task::where('timesheet_id', $timesheet->id)->get();
-//        foreach ($tasks as $task) {
-//            $task->delete();
-//        }
-
         $timesheet->tasks()->delete();
         $timesheet->update([
             'difficult' => $params['difficult'],
@@ -71,6 +61,14 @@ class TimesheetService extends BaseService
                 'content' => $task
             ]);
         }
+        return $timesheet;
+    }
+
+    public function updateStatus($timesheet, $params)
+    {
+        $timesheet->update([
+            'status' => $params['status'],
+        ]);
         return $timesheet;
     }
 }

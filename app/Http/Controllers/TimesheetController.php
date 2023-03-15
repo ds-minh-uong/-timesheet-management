@@ -7,6 +7,7 @@ use App\Http\Requests\Timesheets\UpdateTimesheetRequest;
 use App\Models\Task;
 use App\Models\Timesheet;
 use App\Services\TimesheetService;
+use App\Services\TimesheetServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -19,7 +20,7 @@ class TimesheetController extends BaseController
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
 
-    public function __construct(TimesheetService $timesheetService)
+    public function __construct(TimesheetServiceInterface $timesheetService)
     {
         parent::__construct();
         $this->timesheetService = $timesheetService;
@@ -101,11 +102,7 @@ class TimesheetController extends BaseController
     {
         $this->authorize('updateStatus', $timesheet);
         $req = $request->validated();
-
-        Timesheet::find($timesheet->id)->update([
-            'status' => $req['status'],
-        ]);
-
+        $timesheet = $this->timesheetService->updateStatus($timesheet, $req);
         return Redirect::route('timesheet');
     }
 
