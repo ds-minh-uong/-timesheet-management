@@ -14,14 +14,16 @@ class TimesheetService implements TimesheetServiceInterface
     public function list()
     {
         $this->user = Auth::user();
+        $query = Timesheet::with(['tasks', 'creator']);
+
         if ($this->user->role == 0) {
-            $timesheets = Timesheet::has('tasks')->has('creator')->where('user_id', $this->user->id)->get();
-        } elseif ($this->user->role == 1) {
-            $timesheets = Timesheet::has('tasks')->get();
-        } elseif ($this->user->role == 2) {
-            $timesheets = Timesheet::has('tasks')->has('creator')->where('manager_id', $this->user->id)->orWhere('user_id', $this->user->id)->get();
+            $query->where('user_id', $this->user->id);
         }
-        return $timesheets;
+        elseif ($this->user->role == 2) {
+            $query->where('manager_id', $this->user->id)->orWhere('user_id', $this->user->id);
+        }
+
+        return $query->get();
     }
 
     public function create($params)

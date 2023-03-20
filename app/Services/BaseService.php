@@ -15,36 +15,6 @@ class BaseService
 
     }
 
-    public function create($params)
-    {
-        return $this->model->create($params);
-    }
-
-    public function update($model, $params)
-    {
-//        $model = $this->model->find($id);
-        $model->update($params);
-
-        return $model;
-    }
-
-    public function delete($id)
-    {
-        $item = $this->find($id);
-
-        return $item ? $item->delete() : true;
-    }
-
-    public function find($id, $with = null)
-    {
-        $query = $this->model;
-        if ($with) {
-            $query = $query->with($with);
-        }
-
-        return $query->find($id);
-    }
-
 //    protected function  uploadFile($param, $field, $folder)
 //    {
 //        list($extension, $content) = explode(';', $param[$field]);
